@@ -70,25 +70,6 @@ export default function RecommendationPage() {
     setIsLoadingAuth(false);
   }, [router]);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        avatarRef.current &&
-        !avatarRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    }
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
-
   const onSubmit = async (data: UserProfile) => {
     setIsLoading(true);
     setError(null);
@@ -111,6 +92,7 @@ export default function RecommendationPage() {
   };
 
   const handleLogout = () => {
+    console.log("Click");
     localStorage.removeItem("authToken");
     setAuthToken(null);
     setUser(null);
@@ -173,7 +155,10 @@ export default function RecommendationPage() {
                     History
                   </button>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setDropdownOpen(false);
+                    }}
                     className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
