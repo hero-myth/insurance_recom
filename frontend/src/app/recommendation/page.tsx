@@ -11,6 +11,7 @@ import {
   Loader2,
   LogOut,
   User,
+  History,
 } from "lucide-react";
 import { UserProfile, InsuranceRecommendation } from "@/types";
 import { insuranceApi } from "@/lib/api";
@@ -132,9 +133,9 @@ export default function RecommendationPage() {
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100">
       <div className="max-w-4xl mx-auto p-6">
         {/* Header with Auth */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="text-center flex-1">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+          <div className="flex-1 text-center sm:text-left">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
               Life Insurance Recommendation
             </h1>
             <p className="text-lg text-gray-600">
@@ -142,44 +143,45 @@ export default function RecommendationPage() {
               profile
             </p>
           </div>
-
           {/* Auth Section */}
-          <div className="relative">
-            <button
-              ref={avatarRef}
-              onClick={() => setDropdownOpen((open) => !open)}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 hover:bg-primary-200 border border-primary-200 focus:outline-none"
-              aria-label="User menu"
-            >
-              <User className="w-6 h-6 text-primary-600" />
-            </button>
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 py-2 border border-gray-100">
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.email}
-                  </p>
-                  <p className="text-xs text-gray-500">Signed in</p>
+          <div className="flex justify-center sm:justify-end">
+            <div className="relative">
+              <button
+                ref={avatarRef}
+                onClick={() => setDropdownOpen((open) => !open)}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 hover:bg-primary-200 border border-primary-200 focus:outline-none"
+                aria-label="User menu"
+              >
+                <User className="w-6 h-6 text-primary-600" />
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-50 py-2 border border-gray-100">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user?.email}
+                    </p>
+                    <p className="text-xs text-gray-500">Signed in</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      router.push("/recommendation/history");
+                      setDropdownOpen(false);
+                    }}
+                    className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm"
+                  >
+                    <History className="w-4 h-4 mr-2" />
+                    History
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    router.push("/recommendation/history");
-                  }}
-                  className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm"
-                >
-                  <Loader2 className="w-4 h-4 mr-2" />
-                  History
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 text-sm"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
