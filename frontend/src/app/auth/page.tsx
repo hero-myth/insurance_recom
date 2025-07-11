@@ -14,6 +14,8 @@ interface RegisterForm extends LoginForm {
     confirmPassword: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +48,7 @@ export default function AuthPage() {
 
         try {
             const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-            const response = await fetch(endpoint, {
+            const response = await fetch(API_BASE_URL + endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ export default function AuthPage() {
             const result = await response.json();
 
             if (!result.success) {
-                throw new Error(result.error || 'Authentication failed');
+                throw new Error(result.details ? result.details : result.error ? result.error : 'Authentication failed');
             }
 
             // Store token and redirect

@@ -48,9 +48,9 @@ export function generateRecommendation(
       reasoning = `At your age with low risk tolerance, a 20-year term life policy provides solid protection through your remaining working years and major financial commitments.`;
       riskLevel = "Low";
     } else if (riskTolerance === "medium") {
-      coverageType = "Term";
-      policyDuration = 15;
-      reasoning = `With moderate risk tolerance, a 15-year term life policy covers your remaining high-earning years and major financial obligations.`;
+      coverageType = "Universal";
+      policyDuration = 20;
+      reasoning = `For moderate risk tolerance and mid-age, a Universal life policy offers flexible premiums and cash value accumulation while providing lifelong coverage.`;
       riskLevel = "Medium";
     } else {
       coverageType = "Term";
@@ -58,16 +58,16 @@ export function generateRecommendation(
       reasoning = `Your high risk tolerance suggests a 10-year term life policy, providing essential coverage while allowing for more aggressive investment strategies.`;
       riskLevel = "High";
     }
-  } else {
+  } else if (age < 65) {
     if (riskTolerance === "low") {
       coverageType = "Whole";
-      policyDuration = 0; // Lifetime
+      policyDuration = 0;
       reasoning = `At your age with low risk tolerance, a whole life policy provides permanent protection and builds cash value, though at a higher premium.`;
       riskLevel = "Low";
     } else if (riskTolerance === "medium") {
-      coverageType = "Term";
-      policyDuration = 10;
-      reasoning = `A 10-year term life policy provides essential coverage through your remaining working years at an affordable rate.`;
+      coverageType = "Universal";
+      policyDuration = 0;
+      reasoning = `A Universal life policy with flexible premiums suits your medium risk tolerance and age, balancing protection with cash value growth.`;
       riskLevel = "Medium";
     } else {
       coverageType = "Term";
@@ -75,6 +75,12 @@ export function generateRecommendation(
       reasoning = `With high risk tolerance, a 5-year term life policy provides minimal essential coverage at the lowest cost.`;
       riskLevel = "High";
     }
+  } else {
+    // For 65+ or older, you might want to default to Whole or no coverage
+    coverageType = "Whole";
+    policyDuration = 0;
+    reasoning = `At your age, whole life insurance offers permanent coverage and cash value accumulation.`;
+    riskLevel = riskTolerance === "high" ? "High" : "Low";
   }
 
   // Adjust coverage based on risk tolerance

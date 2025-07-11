@@ -26,7 +26,7 @@ export interface UserSubmission extends UserProfile {
   coverageAmount: number;
   estimatedPremium?: number;
   riskLevel?: string;
-  duration?: string;
+  duration?: number;
   createdAt?: Date;
 }
 

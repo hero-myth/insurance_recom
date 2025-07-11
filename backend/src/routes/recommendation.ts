@@ -6,21 +6,21 @@ const router = Router();
 
 // POST /api/recommendations - Get insurance recommendation (requires auth)
 router.post(
-  "/recommendations",
+  "/",
   authenticateToken,
   RecommendationController.getRecommendation
 );
 
 // GET /api/recommendations/history - Get user's recommendation history (requires auth)
 router.get(
-  "/recommendations/history",
+  "/history",
   authenticateToken,
   RecommendationController.getUserHistory
 );
 
 // POST /api/recommendations/save - Save a recommendation (requires auth)
 router.post(
-  "/recommendations/save",
+  "/save",
   authenticateToken,
   RecommendationController.saveRecommendation
 );

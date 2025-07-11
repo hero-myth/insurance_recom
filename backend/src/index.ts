@@ -10,6 +10,7 @@ import { requestLogger } from "./utils/logger";
 import recommendationRoutes from "./routes/recommendation";
 import authRoutes from "./routes/auth";
 import pool from "./database/connection";
+import cors from 'cors';
 
 // Load environment variables
 dotenv.config();
@@ -31,7 +32,7 @@ async function runMigrations() {
         risk_tolerance VARCHAR(10) NOT NULL CHECK (risk_tolerance IN ('low', 'medium', 'high')),
         recommendation_type VARCHAR(50) NOT NULL,
         coverage_amount VARCHAR(20) NOT NULL,
-        duration VARCHAR(20) NOT NULL,
+        duration INTEGER,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -67,6 +68,31 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_logs_user_id ON logs(user_id);
     `;
 
+    const migrateUserSubmissionsTable = `
+      DO $$ 
+      BEGIN
+        -- Add user_id column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_submissions' AND column_name = 'user_id') THEN
+          ALTER TABLE user_submissions ADD COLUMN user_id INTEGER REFERENCES users(id);
+        END IF;
+        
+        -- Add estimated_premium column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_submissions' AND column_name = 'estimated_premium') THEN
+          ALTER TABLE user_submissions ADD COLUMN estimated_premium INTEGER NOT NULL DEFAULT 0;
+        END IF;
+        
+        -- Add risk_level column if it doesn't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_submissions' AND column_name = 'risk_level') THEN
+          ALTER TABLE user_submissions ADD COLUMN risk_level VARCHAR(10) NOT NULL DEFAULT 'Medium' CHECK (risk_level IN ('Low', 'Medium', 'High'));
+        END IF;
+        
+        -- Change coverage_amount to INTEGER if it's currently VARCHAR
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_submissions' AND column_name = 'coverage_amount' AND data_type = 'character varying') THEN
+          ALTER TABLE user_submissions ALTER COLUMN coverage_amount TYPE INTEGER USING REPLACE(coverage_amount, '$', '')::INTEGER;
+        END IF;
+      END $$;
+    `;
+
     await pool.query(createUserSubmissionsTable);
     console.log("✓ Created user_submissions table");
 
@@ -78,6 +104,9 @@ async function runMigrations() {
 
     await pool.query(createIndexes);
     console.log("✓ Created indexes");
+
+    await pool.query(migrateUserSubmissionsTable);
+    console.log("✓ Updated user_submissions table");
 
     console.log("Database migrations completed successfully!");
   } catch (error) {
@@ -110,12 +139,12 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Apply specific rate limiting to recommendation endpoint
+app.use("/api/recommendations", recommendationRateLimit);
+
 // API routes
 app.use("/api/auth", authRoutes);
-app.use("/api", recommendationRoutes);
-
-// Apply specific rate limiting to recommendation endpoint
-app.use("/api/recommendation", recommendationRateLimit);
+app.use("/api/recommendations", recommendationRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -152,10 +181,10 @@ async function startServer() {
 
   // Start the server
   app.listen(PORT, () => {
-    console.log(`🚀 Insurance Recommendation API running on port ${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`🔗 API base URL: http://localhost:${PORT}/api`);
-    console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`);
+    console.log(`Insurance Recommendation API running on port ${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/health`);
+    console.log(`API base URL: http://localhost:${PORT}/api`);
+    console.log(`Auth endpoints: http://localhost:${PORT}/api/auth`);
   });
 }
 

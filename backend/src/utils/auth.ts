@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import { User, AuthRequest } from "../types";
 import { logSecurity } from "./logger";
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "your-super-secret-jwt-key-change-in-production";
+const JWT_SECRET: jwt.Secret =
+  process.env.JWT_SECRET || "eca2a3f98d3ea1abc8faacfa52f9b4bf7d0aa7d5061f1c7a995acdc9c5ca3e1f";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
 
 export class AuthUtils {
@@ -31,7 +31,7 @@ export class AuthUtils {
         iat: Math.floor(Date.now() / 1000),
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
     );
   }
 

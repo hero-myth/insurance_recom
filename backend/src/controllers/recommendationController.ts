@@ -42,6 +42,7 @@ export class RecommendationController {
           coverageAmount: recommendation.recommendedCoverage,
           estimatedPremium: recommendation.estimatedPremium,
           riskLevel: recommendation.riskLevel,
+          duration: recommendation.policyDuration,
         });
       }
 

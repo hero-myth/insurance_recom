@@ -25,7 +25,6 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
     container_name: insurance_backend
     environment:
       NODE_ENV: development
@@ -44,11 +43,10 @@ services:
       - insurance_network
     command: npm run dev
 
-  # Frontend Application
+  # Frontend Application (Production)
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     container_name: insurance_frontend
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
@@ -62,10 +60,11 @@ services:
     networks:
       - insurance_network
     command: npm run dev
+    restart: unless-stopped
 
 volumes:
   postgres_data:
 
 networks:
   insurance_network:
-    driver: bridge 
+    driver: bridge

@@ -1,6 +1,6 @@
 import { UserProfile, InsuranceRecommendation } from "@/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 // Helper function to get auth token
 const getAuthToken = (): string | null => {
@@ -35,7 +35,9 @@ const makeAuthenticatedRequest = async (
     );
   }
 
-  return response.json();
+  const result = await response.json();
+
+  return result.data;
 };
 
 export const insuranceApi = {
